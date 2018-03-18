@@ -21,14 +21,15 @@ If you have any bug reports, please feel free to submit a PR, or a bug report.
 
 ## Installing
 
-Add the following line to your `~/.tmux.conf`:
+Clone this repository, and add the following line to your `~/.tmux.conf`:
 
 ```bash
 set -g status-right "#(/bin/bash ~/.tmux/kube.tmux 250)
 ```
 
-250 is the color selection, and the options will be added to change
-each as soon as the kinks are all worked out porting this over.
+250 is the color selection for the default foreground, and the options will
+be added for changing each section as soon as the kinks are all worked out
+porting this over.
 
 ## Requirements
 
