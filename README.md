@@ -8,7 +8,8 @@ Inspired by [kube-ps1](https://github.com/jonmosco/kube-ps1), this is a port
 to tmux that includes all the features that make kube-ps1 efficient and brings
 it to the tmux status line.
 
-![prompt](img/screenshot.png)
+![plugin](img/screenshot.png)
+![plugin](img/screenshot2.png)
 
 ## Installing
 
