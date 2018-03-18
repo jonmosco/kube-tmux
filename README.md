@@ -10,22 +10,43 @@ it to the tmux status line.
 
 ![plugin](img/screenshot4.png)
 
+## Disclaimer
+
+This is the first iteration of this plugin, so the updates will be very
+frequent.  Track this repo for changes, and keep in mind some of them
+might cause issues, although I will try to keep them at a minimum, and provide
+fixes as soon as possible.
+
+If you have any bug reports, please feel free to submit a PR, or a bug report.
+
 ## Installing
 
+Add the following line to your `~/.tmux.conf`:
+
+```bash
+set -g status-right "#(/bin/bash ~/.tmux/kube.tmux 250)
+```
+
+250 is the color selection, and the options will be added to change
+each as soon as the kinks are all worked out porting this over.
+
 ## Requirements
+
+* tmux
+* kubectl
 
 ## Plugin Structure
 
 The default plugin layout is:
 
 ```
-[<symbol>|<cluster>:<namespace>]
+<symbol> <cluster>:<namespace>
 ```
 
 If the current-context is not set, kube-ps1 will return the following:
 
 ```
-[<symbol>|N/A:N/A]
+<symbol> N/A:N/A
 ```
 
 ## Customization
