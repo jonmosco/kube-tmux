@@ -10,6 +10,7 @@ it to the tmux status line.
 
 ![plugin](img/screenshot.png)
 ![plugin](img/screenshot3.png)
+![plugin](img/screenshot4.png)
 
 ## Installing
 
