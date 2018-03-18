@@ -9,7 +9,7 @@ to tmux that includes all the features that make kube-ps1 efficient and brings
 it to the tmux status line.
 
 ![plugin](img/screenshot.png)
-![plugin](img/screenshot2.png)
+![plugin](img/screenshot3.png)
 
 ## Installing
 
