@@ -24,12 +24,11 @@ If you have any bug reports, please feel free to submit a PR, or a bug report.
 Clone this repository, and add the following line to your `~/.tmux.conf`:
 
 ```bash
-set -g status-right "#(/bin/bash ~/.tmux/kube.tmux 250)
+set -g status-right "#(/bin/bash ~/.tmux/kube.tmux 250 red cyan)
 ```
 
-250 is the color selection for the default foreground, and the options will
-be added for changing each section as soon as the kinks are all worked out
-porting this over.
+250 is the color selection for the default foreground, red for the context,
+and cyan for the namespace.
 
 ## Requirements
 

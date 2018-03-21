@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Kubernetes status line for tmux
 # Displays current context and namespace
@@ -31,37 +31,6 @@ KUBE_TMUX_KUBECONFIG_CACHE="${KUBECONFIG}"
 KUBE_TMUX_UNAME=$(uname)
 KUBE_TMUX_LAST_TIME=0
 
-_kube_tmux_color_fg() {
-  local KUBE_TMUX_FG_CODE
-  case "${1}" in
-    black) KUBE_TMUX_FG_CODE=0;;
-    red) KUBE_TMUX_FG_CODE="#[fg=red]";;
-    green) KUBE_TMUX_FG_CODE=2;;
-    yellow) KUBE_TMUX_FG_CODE=3;;
-    blue) KUBE_TMUX_FG_CODE=4;;
-    magenta) KUBE_TMUX_FG_CODE=5;;
-    cyan) KUBE_TMUX_FG_CODE="#[fg=cyan]";;
-    white) KUBE_TMUX_FG_CODE=7;;
-    # 256
-    [0-9]|[1-9][0-9]|[1][0-9][0-9]|[2][0-4][0-9]|[2][5][0-6]) KUBE_TMUX_FG_CODE="#[fg=colour${1}]";;
-    *) KUBE_TMUX_FG_CODE=default
-  esac
-
-  if [[ "${KUBE_TMUX_FG_CODE}" == "default" ]]; then
-    KUBE_TMUX_FG_CODE="${_KUBE_TMUX_DEFAULT_FG}"
-    return
-  elif [[ "${KUBE_TMUX_SHELL}" == "bash" ]]; then
-    if tput setaf 1 &> /dev/null; then
-      KUBE_TMUX_FG_CODE="$(tput setaf ${KUBE_TMUX_FG_CODE})"
-    elif [[ $KUBE_TMUX_FG_CODE -ge 0 ]] && [[ $KUBE_TMUX_FG_CODE -le 256 ]]; then
-      KUBE_TMUX_FG_CODE="\033[38;5;${KUBE_TMUX_FG_CODE}m"
-    else
-      KUBE_TMUX_FG_CODE="${_KUBE_TMUX_DEFAULT_FG}"
-    fi
-  fi
-  echo ${_KUBE_TMUX_OPEN_ESC}${KUBE_TMUX_FG_CODE}${_KUBE_TMUX_CLOSE_ESC}
-}
-
 _kube_tmux_binary_check() {
   command -v $1 >/dev/null
 }
@@ -88,6 +57,12 @@ _kube_tmux_split() {
   echo $2
 }
 
+# stat_command() {
+#   if `stat -f '%a' `
+#   stat_bsd="$(stat -f '%a' "$(dirname "${dir}")")"
+#   stat_gnu="$(stat -c '%Lp' "$(dirname "${dir}")")"
+# }
+
 _kube_tmux_file_newer_than() {
   local mtime
   local file=$1
@@ -95,8 +70,9 @@ _kube_tmux_file_newer_than() {
 
   if [[ "$KUBE_TMUX_UNAME" == "Linux" ]]; then
     mtime=$(stat -c %Y "${file}")
-  else
-    mtime=$(stat -f %m "$file")
+  elif [[ "$KUBE_TMUX_UNAME" == "Darwin" ]]; then
+    # Use native stat in cases where gnutils are installed
+    mtime=$(/usr/bin/stat -f %m "$file")
   fi
 
   [[ "${mtime}" -gt "${check_time}" ]]
@@ -151,29 +127,23 @@ _kube_tmux_get_context_ns() {
   fi
 }
 
-# Build our prompt
 kube_tmux() {
   _kube_tmux_update_cache
 
   local KUBE_TMUX
-  local KUBE_TMUX_RESET_COLOR="${_KUBE_TMUX_DEFAULT_FG}${_KUBE_TMUX_CLOSE_ESC}"
 
   # Symbol
   KUBE_TMUX+="#[fg=blue]$(_kube_tmux_symbol)#[fg=colour${1}]"
 
-  if [[ -n "${KUBE_TMUX_SEPARATOR}" ]] && [[ "${KUBE_TMUX_SYMBOL_ENABLE}" == true ]]; then
-    KUBE_TMUX+="${KUBE_TMUX_SEPARATOR}"
-  fi
-
   # Context
-  KUBE_TMUX+="$(_kube_tmux_color_fg $KUBE_TMUX_CTX_COLOR)${KUBE_TMUX_CONTEXT}"
+  KUBE_TMUX+="#[fg=${2}]${KUBE_TMUX_CONTEXT}"
 
   # Namespace
   if [[ "${KUBE_TMUX_NS_ENABLE}" == true ]]; then
     if [[ -n "${KUBE_TMUX_DIVIDER}" ]]; then
       KUBE_TMUX+="#[fg=colour250]${KUBE_TMUX_DIVIDER}"
     fi
-    KUBE_TMUX+="$(_kube_tmux_color_fg ${KUBE_TMUX_NS_COLOR})${KUBE_TMUX_NAMESPACE}"
+    KUBE_TMUX+="#[fg=${3}]${KUBE_TMUX_NAMESPACE}"
   fi
 
   echo "${KUBE_TMUX}"
