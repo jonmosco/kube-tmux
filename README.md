@@ -1,5 +1,4 @@
-kube-tmux: Kubernetes context and namespace status for tmux
-===========================================================
+# kube-tmux: Kubernetes context and namespace status for tmux
 
 A script that lets you add the current Kubernetes context and namespace configured
 on `kubectl` to your tmux status line.
