@@ -43,12 +43,18 @@ The default plugin layout is:
 <symbol> <cluster>:<namespace>
 ```
 
-If the current-context is not set, kube-ps1 will return the following:
+If the current-context is not set, kube-tmux will return the following:
 
 ```
 <symbol> N/A:N/A
 ```
 
 ## Customization
+
+Colors for the default text, context, and namespace can be changed.
+
+```bash
+#(/bin/bash ~/kube-tmux/kube.tmux text context namespace)
+```
 
 ## Contributors
