@@ -51,7 +51,7 @@ If the current-context is not set, kube-tmux will return the following:
 
 ## Customization
 
-Colors for the default text, context, and namespace can be changed.
+Colors for the default text, context, and namespace can be changed:
 
 ```bash
 #(/bin/bash ~/kube-tmux/kube.tmux text context namespace)
