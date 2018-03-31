@@ -14,7 +14,7 @@ it to the tmux status line.
 This is the first iteration of this plugin, so the updates will be very
 frequent.  Track this repo for changes, and keep in mind some of them
 might cause issues, although I will try to keep them at a minimum, and provide
-fixes as soon as possible.
+fixes as soon as possible. Please be patient! 
 
 If you have any bug reports, please feel free to submit a PR, or a bug report.
 
