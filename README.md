@@ -49,7 +49,7 @@ If the current-context is not set, kube-tmux will return the following:
 ```
 
 ## Customization
-
+The default color for the context are red, and cyan for the namespace
 Colors for the default text, context, and namespace can be changed:
 
 ```bash
