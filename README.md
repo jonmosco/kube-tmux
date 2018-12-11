@@ -20,10 +20,10 @@ If you have any bug reports, please feel free to submit a PR, or a bug report.
 
 ## Installing
 
-Clone this repository, and add the following line to your `~/.tmux.conf`:
+Clone this repository to your `$HOME/.tmux` directory, and add the following line to your `~/.tmux.conf`:
 
 ```bash
-set -g status-right "#(/bin/bash ~/.tmux/kube.tmux 250 red cyan)"
+set -g status-right "#(/bin/bash $HOME/.tmux/kube.tmux 250 red cyan)"
 ```
 
 250 is the color selection for the default foreground, red for the context,
@@ -53,7 +53,7 @@ The default color for the context are red, and cyan for the namespace
 Colors for the default text, context, and namespace can be changed:
 
 ```bash
-#(/bin/bash ~/kube-tmux/kube.tmux text context namespace)
+#(/bin/bash $HOME/.tmux/kube.tmux text context namespace)
 ```
 
 ## Contributors
