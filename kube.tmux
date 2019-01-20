@@ -133,7 +133,9 @@ kube_tmux() {
   local KUBE_TMUX
 
   # Symbol
-  KUBE_TMUX+="#[fg=blue]$(_kube_tmux_symbol)#[fg=colour${1}]"
+  if [[ "${KUBE_TMUX_SYMBOL_ENABLE}" == true ]]; then
+    KUBE_TMUX+="#[fg=blue]$(_kube_tmux_symbol)#[fg=colour${1}]"
+  fi
 
   # Context
   KUBE_TMUX+="#[fg=${2}]${KUBE_TMUX_CONTEXT}"
