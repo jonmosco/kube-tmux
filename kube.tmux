@@ -48,8 +48,8 @@ _kube_tmux_symbol() {
     KUBE_TMUX_SYMBOL="${KUBE_TMUX_SYMBOL_IMG}"
   fi
 
-  if [ -n $KUBE_TMUX_SYMBOL_DEFAULT ]; then
-    KUBE_TMUX_SYMBOL="${KUBE_TMUX_SYMBOL_DEFAULT}"
+  if [ -n $KUBE_TMUX_SYMBOL_CUSTOM ]; then
+    KUBE_TMUX_SYMBOL="${KUBE_TMUX_SYMBOL_CUSTOM}"
   fi
 
   echo "${KUBE_TMUX_SYMBOL}"
