@@ -20,10 +20,28 @@ If you have any bug reports, please feel free to submit a PR, or a bug report.
 
 ## Installing
 
+### Git
+
 Clone this repository to your `$HOME/.tmux` directory, and add the following line to your `~/.tmux.conf`:
 
 ```bash
 set -g status-right "#(/bin/bash $HOME/.tmux/kube.tmux 250 red cyan)"
+```
+
+250 is the color selection for the default foreground, red for the context,
+and cyan for the namespace.
+
+### TPM
+
+It can be installed using the [Tmux Plugin Manager](https://github.com/tmux-plugins/tpm)
+
+```bash
+set -g status-right "#(/bin/bash ~/.tmux/plugins/kube-tmux/kube.tmux 250 red cyan)"
+
+set -g @plugin 'tmux-plugins/tpm'
+set -g @plugin 'jonmosco/kube-tmux'
+
+run '~/.tmux/plugins/tpm/tpm'
 ```
 
 250 is the color selection for the default foreground, red for the context,
