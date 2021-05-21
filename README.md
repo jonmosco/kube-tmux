@@ -29,7 +29,7 @@ Add plugin to the list of TPM plugins in `.tmux.conf`:
 
 Hit `prefix + I` to fetch the plugin and source it.
 
-You should now have all `tmux-logging` key bindings defined.
+You should now the k8s info in your status
 
 ### Manual Installation
 
