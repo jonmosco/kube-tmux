@@ -14,13 +14,37 @@ it to the tmux status line.
 This is the first iteration of this plugin, so the updates will be very
 frequent.  Track this repo for changes, and keep in mind some of them
 might cause issues, although I will try to keep them at a minimum, and provide
-fixes as soon as possible. Please be patient! 
+fixes as soon as possible. Please be patient!
 
 If you have any bug reports, please feel free to submit a PR, or a bug report.
 
 ## Installing
 
-Clone this repository to your `$HOME/.tmux` directory, and add the following line to your `~/.tmux.conf`:
+
+### Installation with [Tmux Plugin Manager](https://github.com/tmux-plugins/tpm) (recommended)
+
+Add plugin to the list of TPM plugins in `.tmux.conf`:
+
+    set -g @plugin 'danwald/kube-tmux'
+
+Hit `prefix + I` to fetch the plugin and source it.
+
+You should now have all `tmux-logging` key bindings defined.
+
+### Manual Installation
+
+Clone the repo:
+
+    $ git clone https://github.com/danwald/kube-tmux ~/clone/path
+
+Add this line to the bottom of `.tmux.conf`:
+
+    run-shell ~/clone/path/kube-tmux
+
+Reload TMUX environment:
+
+    # type this in terminal
+    $ tmux source-file ~/.tmux.conf
 
 ```bash
 set -g status-right "#(/bin/bash $HOME/.tmux/kube.tmux 250 red cyan)"
