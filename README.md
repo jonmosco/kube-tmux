@@ -25,7 +25,7 @@ If you have any bug reports, please feel free to submit a PR, or a bug report.
 
 Add plugin to the list of TPM plugins in `.tmux.conf`:
 
-    set -g @plugin 'danwald/kube-tmux'
+    set -g @plugin 'jonmosco/kube-tmux'
 
 Hit `prefix + I` to fetch the plugin and source it.
 
@@ -35,7 +35,7 @@ You should now the k8s info in your status
 
 Clone the repo:
 
-    $ git clone https://github.com/danwald/kube-tmux ~/clone/path
+    $ git clone https://github.com/jonmosco/kube-tmux ~/clone/path
 
 Add this line to the bottom of `.tmux.conf`:
 
@@ -81,3 +81,5 @@ Colors for the default text, context, and namespace can be changed:
 ```
 
 ## Contributors
+
+@danwald
