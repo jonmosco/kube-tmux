@@ -30,6 +30,7 @@ KUBE_TMUX_NS_COLOR="${KUBE_TMUX_NS_COLOR-cyan}"
 KUBE_TMUX_KUBECONFIG_CACHE="${KUBECONFIG}"
 KUBE_TMUX_UNAME=$(uname)
 KUBE_TMUX_LAST_TIME=0
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 _kube_tmux_binary_check() {
   command -v $1 >/dev/null
