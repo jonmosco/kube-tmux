@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/usr/bin/env bash
 
 # Kubernetes status line for tmux
 # Displays current context and namespace
