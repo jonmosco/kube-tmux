@@ -31,6 +31,9 @@ KUBE_TMUX_KUBECONFIG_CACHE="${KUBECONFIG}"
 KUBE_TMUX_UNAME=$(uname)
 KUBE_TMUX_LAST_TIME=0
 
+KUBE_TMUX_CLUSTER_FUNCTION="${KUBE_TMUX_CLUSTER_FUNCTION}"
+KUBE_TMUX_NAMESPACE_FUNCTION="${KUBE_TMUX_NAMESPACE_FUNCTION}"
+
 _kube_tmux_binary_check() {
   command -v $1 >/dev/null
 }
@@ -124,6 +127,16 @@ _kube_tmux_get_context_ns() {
     KUBE_TMUX_NAMESPACE="$(${KUBE_TMUX_BINARY} config view --minify --output 'jsonpath={..namespace}' 2>/dev/null)"
     # Set namespace to 'default' if it is not defined
     KUBE_TMUX_NAMESPACE="${KUBE_TMUX_NAMESPACE:-default}"
+  fi
+  _kube_tmux_format_context_ns
+}
+
+_kube_tmux_format_context_ns() {
+  if [[ -n "${KUBE_TMUX_CLUSTER_FUNCTION}" ]]; then
+    KUBE_TMUX_CONTEXT=$($KUBE_TMUX_CLUSTER_FUNCTION $KUBE_TMUX_CONTEXT)
+  fi
+  if [[ -n "${KUBE_TMUX_NAMESPACE_FUNCTION}" ]]; then
+    KUBE_TMUX_CONTEXT=$($KUBE_TMUX_NAMESPACE_FUNCTION $KUBE_TMUX_NAMESPACE)
   fi
 }
 
