@@ -3,7 +3,7 @@
 # Kubernetes status line for tmux
 # Displays current context and namespace
 
-# Copyright 2023 Jon Mosco
+# Copyright 2025 Jon Mosco
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -28,14 +28,22 @@ KUBE_TMUX_SYMBOL_COLOR="${KUBE_TMUX_SYMBOL_COLOR-blue}"
 KUBE_TMUX_CTX_COLOR="${KUBE_TMUX_CTX_COLOR-red}"
 KUBE_TMUX_NS_COLOR="${KUBE_TMUX_NS_COLOR-cyan}"
 KUBE_TMUX_KUBECONFIG_CACHE="${KUBECONFIG}"
-KUBE_TMUX_UNAME=$(uname)
 KUBE_TMUX_LAST_TIME=0
 
-KUBE_TMUX_CLUSTER_FUNCTION="${KUBE_TMUX_CLUSTER_FUNCTION}"
-KUBE_TMUX_NAMESPACE_FUNCTION="${KUBE_TMUX_NAMESPACE_FUNCTION}"
-
 _kube_tmux_binary_check() {
-  command -v $1 >/dev/null
+  command -v "$1" >/dev/null
+}
+
+# Determine our shell
+_kube_tmux_shell_type() {
+  local _KUBE_TMUX_SHELL_TYPE
+
+  if [ "${ZSH_VERSION-}" ]; then
+    _KUBE_TMUX_SHELL_TYPE="zsh"
+  elif [ "${BASH_VERSION-}" ]; then
+    _KUBE_TMUX_SHELL_TYPE="bash"
+  fi
+  echo $_KUBE_TMUX_SHELL_TYPE
 }
 
 _kube_tmux_symbol() {
@@ -60,22 +68,20 @@ _kube_tmux_split() {
   echo $2
 }
 
-# stat_command() {
-#   if `stat -f '%a' `
-#   stat_bsd="$(stat -f '%a' "$(dirname "${dir}")")"
-#   stat_gnu="$(stat -c '%Lp' "$(dirname "${dir}")")"
-# }
-
 _kube_tmux_file_newer_than() {
   local mtime
   local file=$1
   local check_time=$2
 
-  if [[ "$KUBE_TMUX_UNAME" == "Linux" ]]; then
-    mtime=$(stat -c %Y "${file}")
-  elif [[ "$KUBE_TMUX_UNAME" == "Darwin" ]]; then
-    # Use native stat in cases where gnutils are installed
-    mtime=$(/usr/bin/stat -f %m "$file")
+  if [[ "$(_kube_tmux_shell_type)" == "zsh" ]]; then
+    # Use zstat '-F %s.%s' to make it compatible with low zsh version (eg: 5.0.2)
+    mtime=$(zstat +mtime -F %s.%s "${file}")
+  elif stat -c "%s" /dev/null &> /dev/null; then
+    # GNU stat
+    mtime=$(stat -L -c %Y "${file}")
+  else
+    # BSD stat
+    mtime=$(stat -L -f %m "$file")
   fi
 
   [[ "${mtime}" -gt "${check_time}" ]]
