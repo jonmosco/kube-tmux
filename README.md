@@ -32,7 +32,7 @@ and cyan for the namespace.
 
 ```sh
 set -g @plugin 'tmux-plugins/tpm' # mandatory
-set -g '@jonmosco/kube-tmux'
+set -g @plugin 'jonmosco/kube-tmux'
 ```
 
 ## Requirements
