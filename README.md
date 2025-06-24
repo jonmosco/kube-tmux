@@ -71,7 +71,7 @@ respectively.
 
 For the following examples let's assume the following:
 
-cluster name: `sandbox.k8s.example.com`
+cluster name: `sandbox.k8s.example.com`  
 namespace: `alpha`
 
 If you're using domain style cluster names, your prompt will get quite long
@@ -80,10 +80,10 @@ cluster name (`sandbox`), you could do that by adding the following:
 
 ```sh
 function get_cluster_short() {
-  echo "$1" | cut -d . -f1
+    echo "$1" | cut -d . -f1
 }
 
-KUBE_TMUX_CLUSTER_FUNCTION=get_cluster_short
+export KUBE_TMUX_CLUSTER_FUNCTION=get_cluster_short
 ```
 
 The same pattern can be followed to customize the display of the namespace.
@@ -98,7 +98,20 @@ function get_namespace_upper() {
 export KUBE_TMUX_NAMESPACE_FUNCTION=get_namespace_upper
 ```
 
-In both cases, the variable is set to the name of the function, and you must have defined the function in your shell configuration before kube_ps1 is called. The function must accept a single parameter and echo out the final value.
+**Important:**  
+These functions and environment variables must be defined and exported *before* `kube-tmux` is loaded in your tmux configuration. If you are using TPM, ensure you set these in your shell profile (e.g., `.bashrc`, `.zshrc`) or in a sourced script before launching tmux. If you are loading `kube-tmux` manually in your `~/.tmux.conf`, set and export these variables/functions above the `set -g status-right` line.
+
+Example for manual setup in `~/.tmux.conf`:
+```sh
+# In your shell profile (before starting tmux)
+function get_cluster_short() {
+    echo "$1" | cut -d . -f1
+}
+export KUBE_TMUX_CLUSTER_FUNCTION=get_cluster_short
+
+# In your ~/.tmux.conf
+set -g status-right "#(/bin/bash $HOME/.tmux/kube-tmux/kube.tmux 250 red cyan)"
+```
 
 | Variable | Default | Meaning |
 | :------- | :-----: | ------- |
