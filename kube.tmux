@@ -19,5 +19,6 @@
 
 # shellcheck disable=SC2034
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 # shellcheck disable=SC1091
 source "${CURRENT_DIR}/scripts/kube-tmux.sh"

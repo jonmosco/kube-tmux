@@ -34,6 +34,12 @@ KUBE_TMUX_NS_COLOR="${KUBE_TMUX_NS_COLOR-cyan}"
 KUBE_TMUX_KUBECONFIG_CACHE="${KUBECONFIG}"
 KUBE_TMUX_LAST_TIME=0
 
+# Source customizations if present
+if [[ -f "${HOME}/.tmux/config/kube-func.sh" ]]; then
+  # shellcheck disable=SC1091
+  source "${HOME}/.tmux/config/kube-func.sh"
+fi
+
 _kube_tmux_binary_check() {
   command -v "$1" >/dev/null
 }
@@ -124,8 +130,8 @@ _kube_tmux_get_context() {
     # Set namespace to 'N/A' if it is not defined
     KUBE_TMUX_CONTEXT="${KUBE_TMUX_CONTEXT:-N/A}"
 
-    if [[ -n "${KUBE_TMUX_CLUSTER_FUNCTION}" ]]; then
-      KUBE_TMUX_CONTEXT="$("${KUBE_TMUX_CLUSTER_FUNCTION}" "${KUBE_TMUX_CONTEXT}")"
+    if [[ -n "${KUBE_TMUX_CONTEXT_FUNCTION}" && "$(type -t "${KUBE_TMUX_CONTEXT_FUNCTION}")" == "function" ]]; then
+      KUBE_TMUX_CONTEXT="$("${KUBE_TMUX_CONTEXT_FUNCTION}" "${KUBE_TMUX_CONTEXT}")"
     fi
   fi
 }
@@ -135,10 +141,12 @@ _kube_tmux_get_ns() {
     KUBE_TMUX_NAMESPACE="$(${KUBE_TMUX_BINARY} config view --minify --output 'jsonpath={..namespace}' 2>/dev/null)"
     KUBE_TMUX_NAMESPACE="${KUBE_TMUX_NAMESPACE:-N/A}"
 
-    if [[ -n "${KUBE_TMUX_NAMESPACE_FUNCTION}" ]]; then
-        KUBE_TMUX_NAMESPACE="$("${KUBE_TMUX_NAMESPACE_FUNCTION}" "${KUBE_TMUX_NAMESPACE}")"
+    if [[ -n "${KUBE_TMUX_NAMESPACE_FUNCTION}" && "$(type -t "${KUBE_TMUX_NAMESPACE_FUNCTION}")" == "function" ]]; then
+      KUBE_TMUX_NAMESPACE="$("${KUBE_TMUX_NAMESPACE_FUNCTION}" "${KUBE_TMUX_NAMESPACE}")"
     fi
   fi
+
+  echo "${KUBE_TMUX_NAMESPACE}"
 }
 
 _kube_tmux_get_context_ns() {
@@ -149,12 +157,6 @@ _kube_tmux_get_context_ns() {
     else
       KUBE_TMUX_LAST_TIME=$(date +%s)
     fi
-  fi
-
-  if [[ "${KUBE_TMUX_NAMESPACE_ENABLE}" == true ]]; then
-    KUBE_TMUX_NAMESPACE="$(${KUBE_TMUX_BINARY} config view --minify --output 'jsonpath={..namespace}' 2>/dev/null)"
-    # Set namespace to 'default' if it is not defined
-    KUBE_TMUX_NAMESPACE="${KUBE_TMUX_NAMESPACE:-default}"
   fi
 
   _kube_tmux_get_context
@@ -185,4 +187,5 @@ main() {
   echo "${KUBE_TMUX}"
 }
 
+# The arguements should possibly be set when its called via TPM
 main "$@"

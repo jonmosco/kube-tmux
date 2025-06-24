@@ -11,10 +11,7 @@ it to the tmux status line.
 
 ## Disclaimer
 
-This is the first iteration of this plugin, so the updates will be very
-frequent.  Track this repo for changes, and keep in mind some of them
-might cause issues, although I will try to keep them at a minimum, and provide
-fixes as soon as possible. Please be patient!
+This plugin is actively under development, with lots of updates on the way — including a full restructure to work with TPM, tons of bug fixes, and style improvements. Expect frequent changes. Some updates might break things here and there, but I’ll be quick to patch them.
 
 If you have any bug reports, please feel free to submit a PR, or a bug report.
 
@@ -36,8 +33,6 @@ and cyan for the namespace.
 ```sh
 set -g @plugin 'tmux-plugins/tpm' # mandatory
 set -g '@jonmosco/kube-tmux'
-
-set -g @kube-tmux '250' 'red' 'cyan'
 ```
 
 ## Requirements
