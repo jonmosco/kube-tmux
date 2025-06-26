@@ -31,8 +31,8 @@ KUBE_TMUX_DIVIDER="${KUBE_TMUX_DIVIDER-:}"
 KUBE_TMUX_SYMBOL_COLOR="${KUBE_TMUX_SYMBOL_COLOR-blue}"
 KUBE_TMUX_CTX_COLOR="${KUBE_TMUX_CTX_COLOR-red}"
 KUBE_TMUX_NS_COLOR="${KUBE_TMUX_NS_COLOR-cyan}"
-KUBE_TMUX_KUBECONFIG_CACHE="${KUBECONFIG}"
-KUBE_TMUX_LAST_TIME=0
+_KUBE_TMUX_KUBECONFIG_CACHE="${KUBECONFIG}"
+_KUBE_TMUX_LAST_TIME=0
 
 # Source customizations if present
 if [[ -f "${HOME}/.tmux/config/kube-func.sh" ]]; then
@@ -105,9 +105,9 @@ _kube_tmux_update_cache() {
     return
   fi
 
-  if [[ "${KUBECONFIG}" != "${KUBE_TMUX_KUBECONFIG_CACHE}" ]]; then
+  if [[ "${KUBECONFIG}" != "${_KUBE_TMUX_KUBECONFIG_CACHE}" ]]; then
     # User changed KUBECONFIG; unconditionally refetch.
-    KUBE_TMUX_KUBECONFIG_CACHE=${KUBECONFIG}
+    _KUBE_TMUX_KUBECONFIG_CACHE=${KUBECONFIG}
     _kube_tmux_get_context_ns
     return
   fi
@@ -117,7 +117,7 @@ _kube_tmux_update_cache() {
   local conf
   for conf in $(_kube_tmux_split : "${KUBECONFIG:-${HOME}/.kube/config}"); do
     [[ -r "${conf}" ]] || continue
-    if _kube_tmux_file_newer_than "${conf}" "${KUBE_TMUX_LAST_TIME}"; then
+    if _kube_tmux_file_newer_than "${conf}" "${_KUBE_TMUX_LAST_TIME}"; then
       _kube_tmux_get_context_ns
       return
     fi
@@ -151,11 +151,11 @@ _kube_tmux_get_ns() {
 
 _kube_tmux_get_context_ns() {
   # Set the command time
-  if [[ "${KUBE_TMUX_SHELL}" == "bash" ]]; then
+  if [[ "$(_kube_tmux_shell_type)" == "bash" ]]; then
     if ((BASH_VERSINFO[0] >= 4)); then
-      KUBE_TMUX_LAST_TIME=$(printf '%(%s)T')
+      _KUBE_TMUX_LAST_TIME=$(printf '%(%s)T')
     else
-      KUBE_TMUX_LAST_TIME=$(date +%s)
+      _KUBE_TMUX_LAST_TIME=$(date +%s)
     fi
   fi
 

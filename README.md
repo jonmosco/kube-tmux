@@ -102,6 +102,7 @@ export KUBE_TMUX_NAMESPACE_FUNCTION=get_namespace_upper
 These functions and environment variables must be defined and exported *before* `kube-tmux` is loaded in your tmux configuration. If you are using TPM, ensure you set these in your shell profile (e.g., `.bashrc`, `.zshrc`) or in a sourced script before launching tmux. If you are loading `kube-tmux` manually in your `~/.tmux.conf`, set and export these variables/functions above the `set -g status-right` line.
 
 Example for manual setup in `~/.tmux.conf`:
+
 ```sh
 # In your shell profile (before starting tmux)
 function get_cluster_short() {
