@@ -127,7 +127,7 @@ _kube_tmux_update_cache() {
 _kube_tmux_get_context() {
   if [[ "${KUBE_TMUX_CONTEXT_ENABLE}" == true ]]; then
     KUBE_TMUX_CONTEXT="$(${KUBE_TMUX_BINARY} config current-context 2>/dev/null)"
-    # Set namespace to 'N/A' if it is not defined
+    # Set context to 'N/A' if it is not defined
     KUBE_TMUX_CONTEXT="${KUBE_TMUX_CONTEXT:-N/A}"
 
     if [[ -n "${KUBE_TMUX_CONTEXT_FUNCTION}" && "$(type -t "${KUBE_TMUX_CONTEXT_FUNCTION}")" == "function" ]]; then
@@ -145,8 +145,6 @@ _kube_tmux_get_ns() {
       KUBE_TMUX_NAMESPACE="$("${KUBE_TMUX_NAMESPACE_FUNCTION}" "${KUBE_TMUX_NAMESPACE}")"
     fi
   fi
-
-  echo "${KUBE_TMUX_NAMESPACE}"
 }
 
 _kube_tmux_get_context_ns() {
@@ -174,7 +172,9 @@ main() {
   fi
 
   # Context
-  KUBE_TMUX+="#[fg=${2}]${KUBE_TMUX_CONTEXT}"
+  if [[ "${KUBE_TMUX_CONTEXT_ENABLE}" == true ]]; then
+    KUBE_TMUX+="#[fg=${2}]${KUBE_TMUX_CONTEXT}"
+  fi
 
   # Namespace
   if [[ "${KUBE_TMUX_NAMESPACE_ENABLE}" == true ]]; then

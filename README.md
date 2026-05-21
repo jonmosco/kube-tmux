@@ -9,12 +9,6 @@ it to the tmux status line.
 
 ![plugin](img/screenshot4.png)
 
-## Disclaimer
-
-This plugin is actively under development, with lots of updates on the way — including a full restructure to work with TPM, tons of bug fixes, and style improvements. Expect frequent changes. Some updates might break things here and there, but I’ll be quick to patch them.
-
-If you have any bug reports, please feel free to submit a PR, or a bug report.
-
 ## Installing
 
 ### Manual
@@ -56,12 +50,29 @@ If the current-context is not set, kube-tmux will return the following:
 
 ## Customization
 
-The default color for the context are red, and cyan for the namespace
-Colors for the default text, context, and namespace can be changed:
+Colors for the default text, context, and namespace can be changed via positional arguments:
 
 ```sh
 #(/bin/bash $HOME/.tmux/kube-tmux/kube.tmux text context namespace)
 ```
+
+### Configuration Variables
+
+The following environment variables can be used to customize the plugin:
+
+| Variable | Default | Meaning |
+| :------- | :-----: | ------- |
+| `KUBE_TMUX_BINARY` | `kubectl` | Binary to use for fetching context and namespace |
+| `KUBE_TMUX_SYMBOL_ENABLE` | `true` | Show the Kubernetes symbol |
+| `KUBE_TMUX_SYMBOL_USE_IMG` | `false` | Use the wheel of dharma symbol instead of the helm |
+| `KUBE_TMUX_SYMBOL_COLOR` | `blue` | Color of the Kubernetes symbol |
+| `KUBE_TMUX_CONTEXT_ENABLE` | `true` | Show the current context |
+| `KUBE_TMUX_NAMESPACE_ENABLE` | `true` | Show the current namespace |
+| `KUBE_TMUX_DIVIDER` | `:` | Separator between context and namespace |
+| `KUBE_TMUX_CTX_COLOR` | `red` | Default color of the context |
+| `KUBE_TMUX_NS_COLOR` | `cyan` | Default color of the namespace |
+
+### Custom Functions
 
 ## Customize display of cluster name and namespace
 
