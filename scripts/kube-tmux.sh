@@ -170,7 +170,7 @@ main() {
 
   # Symbol
   if [[ "${KUBE_TMUX_SYMBOL_ENABLE}" == true ]]; then
-    KUBE_TMUX+="#[fg=blue]$(_kube_tmux_symbol)#[fg=colour${1}]"
+    KUBE_TMUX+="#[fg=${KUBE_TMUX_SYMBOL_COLOR}]$(_kube_tmux_symbol)#[fg=colour${1}]"
   fi
 
   # Context

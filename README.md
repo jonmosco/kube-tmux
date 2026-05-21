@@ -66,7 +66,7 @@ Colors for the default text, context, and namespace can be changed:
 ## Customize display of cluster name and namespace
 
 You can change how the cluster name and namespace are displayed using the
-`KUBE_TMUX_CLUSTER_FUNCTION` and `KUBE_TMUX_NAMESPACE_FUNCTION` variables
+`KUBE_TMUX_CONTEXT_FUNCTION` and `KUBE_TMUX_NAMESPACE_FUNCTION` variables
 respectively.
 
 For the following examples let's assume the following:
@@ -83,7 +83,7 @@ function get_cluster_short() {
     echo "$1" | cut -d . -f1
 }
 
-export KUBE_TMUX_CLUSTER_FUNCTION=get_cluster_short
+export KUBE_TMUX_CONTEXT_FUNCTION=get_cluster_short
 ```
 
 The same pattern can be followed to customize the display of the namespace.
@@ -108,7 +108,7 @@ Example for manual setup in `~/.tmux.conf`:
 function get_cluster_short() {
     echo "$1" | cut -d . -f1
 }
-export KUBE_TMUX_CLUSTER_FUNCTION=get_cluster_short
+export KUBE_TMUX_CONTEXT_FUNCTION=get_cluster_short
 
 # In your ~/.tmux.conf
 set -g status-right "#(/bin/bash $HOME/.tmux/kube-tmux/kube.tmux 250 red cyan)"
@@ -116,5 +116,5 @@ set -g status-right "#(/bin/bash $HOME/.tmux/kube-tmux/kube.tmux 250 red cyan)"
 
 | Variable | Default | Meaning |
 | :------- | :-----: | ------- |
-| `KUBE_TMUX_CLUSTER_FUNCTION` | No default, must be user supplied | Function to customize how cluster is displayed |
+| `KUBE_TMUX_CONTEXT_FUNCTION` | No default, must be user supplied | Function to customize how context is displayed |
 | `KUBE_TMUX_NAMESPACE_FUNCTION` | No default, must be user supplied | Function to customize how namespace is displayed |
