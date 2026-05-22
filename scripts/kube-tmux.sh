@@ -23,7 +23,6 @@ CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # Default values for the plugin
 KUBE_TMUX_BINARY="${KUBE_TMUX_BINARY:-kubectl}"
 KUBE_TMUX_SYMBOL_ENABLE="${KUBE_TMUX_SYMBOL_ENABLE:-true}"
-KUBE_TMUX_SYMBOL_DEFAULT="${KUBE_TMUX_SYMBOL_DEFAULT:-\u2388 }"
 KUBE_TMUX_SYMBOL_USE_IMG="${KUBE_TMUX_SYMBOL_USE_IMG:-false}"
 KUBE_TMUX_CONTEXT_ENABLE="${KUBE_TMUX_CONTEXT_ENABLE:-true}"
 KUBE_TMUX_NAMESPACE_ENABLE="${KUBE_TMUX_NAMESPACE_ENABLE:-true}"
@@ -53,7 +52,7 @@ _kube_tmux_shell_type() {
   elif [ "${BASH_VERSION-}" ]; then
     _KUBE_TMUX_SHELL_TYPE="bash"
   fi
-  echo $_KUBE_TMUX_SHELL_TYPE
+  echo "${_KUBE_TMUX_SHELL_TYPE}"
 }
 
 _kube_tmux_symbol() {
@@ -75,7 +74,7 @@ _kube_tmux_symbol() {
 _kube_tmux_split() {
   type setopt >/dev/null 2>&1 && setopt SH_WORD_SPLIT
   local IFS=$1
-  echo $2
+  echo "$2"
 }
 
 _kube_tmux_file_newer_than() {
@@ -85,7 +84,7 @@ _kube_tmux_file_newer_than() {
 
   if [[ "$(_kube_tmux_shell_type)" == "zsh" ]]; then
     # Use zstat '-F %s.%s' to make it compatible with low zsh version (eg: 5.0.2)
-    mtime=$(zstat +mtime -F %s.%s "${file}")
+    mtime=$(zstat +mtime -F %s "${file}")
   elif stat -c "%s" /dev/null &> /dev/null; then
     # GNU stat
     mtime=$(stat -L -c %Y "${file}")
@@ -155,6 +154,8 @@ _kube_tmux_get_context_ns() {
     else
       _KUBE_TMUX_LAST_TIME=$(date +%s)
     fi
+  else
+    _KUBE_TMUX_LAST_TIME=$(date +%s)
   fi
 
   _kube_tmux_get_context
