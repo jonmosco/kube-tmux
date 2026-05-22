@@ -187,5 +187,5 @@ main() {
   echo "${KUBE_TMUX}"
 }
 
-# The arguements should possibly be set when its called via TPM
+# The arguments should possibly be set when its called via TPM
 main "$@"

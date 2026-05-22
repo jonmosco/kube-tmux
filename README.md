@@ -74,20 +74,19 @@ The following environment variables can be used to customize the plugin:
 
 ### Custom Functions
 
-## Customize display of cluster name and namespace
+You can customize how the context and namespace are displayed by defining
+shell functions and exporting them via environment variables.
 
-You can change how the cluster name and namespace are displayed using the
-`KUBE_TMUX_CONTEXT_FUNCTION` and `KUBE_TMUX_NAMESPACE_FUNCTION` variables
-respectively.
+| Variable | Meaning |
+| :------- | ------- |
+| `KUBE_TMUX_CONTEXT_FUNCTION` | Function to customize how the context is displayed |
+| `KUBE_TMUX_NAMESPACE_FUNCTION` | Function to customize how the namespace is displayed |
 
-For the following examples let's assume the following:
+Each function receives the current value as its first argument and should
+echo the transformed value.
 
-cluster name: `sandbox.k8s.example.com`  
-namespace: `alpha`
-
-If you're using domain style cluster names, your prompt will get quite long
-very quickly. Let's say you only want to display the first portion of the
-cluster name (`sandbox`), you could do that by adding the following:
+For example, if your cluster name is `sandbox.k8s.example.com` and you only
+want to display `sandbox`:
 
 ```sh
 function get_cluster_short() {
@@ -97,9 +96,7 @@ function get_cluster_short() {
 export KUBE_TMUX_CONTEXT_FUNCTION=get_cluster_short
 ```
 
-The same pattern can be followed to customize the display of the namespace.
-Let's say you would prefer the namespace to be displayed in all uppercase
-(`ALPHA`), here's one way you could do that:
+To display the namespace in uppercase:
 
 ```sh
 function get_namespace_upper() {
@@ -109,23 +106,9 @@ function get_namespace_upper() {
 export KUBE_TMUX_NAMESPACE_FUNCTION=get_namespace_upper
 ```
 
-**Important:**  
-These functions and environment variables must be defined and exported *before* `kube-tmux` is loaded in your tmux configuration. If you are using TPM, ensure you set these in your shell profile (e.g., `.bashrc`, `.zshrc`) or in a sourced script before launching tmux. If you are loading `kube-tmux` manually in your `~/.tmux.conf`, set and export these variables/functions above the `set -g status-right` line.
+These functions and variables must be defined and exported *before* tmux
+starts. Set them in your shell profile (e.g., `.bashrc`, `.zshrc`).
 
-Example for manual setup in `~/.tmux.conf`:
-
-```sh
-# In your shell profile (before starting tmux)
-function get_cluster_short() {
-    echo "$1" | cut -d . -f1
-}
-export KUBE_TMUX_CONTEXT_FUNCTION=get_cluster_short
-
-# In your ~/.tmux.conf
-set -g status-right "#(/bin/bash $HOME/.tmux/kube-tmux/kube.tmux 250 red cyan)"
-```
-
-| Variable | Default | Meaning |
-| :------- | :-----: | ------- |
-| `KUBE_TMUX_CONTEXT_FUNCTION` | No default, must be user supplied | Function to customize how context is displayed |
-| `KUBE_TMUX_NAMESPACE_FUNCTION` | No default, must be user supplied | Function to customize how namespace is displayed |
+You can also place custom functions in `~/.tmux/config/kube-func.sh`. This
+file is automatically sourced by kube-tmux if it exists, making it a
+convenient place to keep your customizations separate from your shell profile.
