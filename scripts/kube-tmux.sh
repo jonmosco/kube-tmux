@@ -3,7 +3,7 @@
 # Kubernetes status line for tmux
 # Displays current context and namespace
 
-# Copyright 2025 Jon Mosco
+# Copyright 2026 Jon Mosco
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,12 +26,14 @@ KUBE_TMUX_SYMBOL_ENABLE="${KUBE_TMUX_SYMBOL_ENABLE:-true}"
 KUBE_TMUX_SYMBOL_USE_IMG="${KUBE_TMUX_SYMBOL_USE_IMG:-false}"
 KUBE_TMUX_CONTEXT_ENABLE="${KUBE_TMUX_CONTEXT_ENABLE:-true}"
 KUBE_TMUX_NAMESPACE_ENABLE="${KUBE_TMUX_NAMESPACE_ENABLE:-true}"
-KUBE_TMUX_DIVIDER="${KUBE_TMUX_DIVIDER-:}"
-KUBE_TMUX_SYMBOL_COLOR="${KUBE_TMUX_SYMBOL_COLOR-blue}"
-KUBE_TMUX_CTX_COLOR="${KUBE_TMUX_CTX_COLOR-red}"
-KUBE_TMUX_NS_COLOR="${KUBE_TMUX_NS_COLOR-cyan}"
+KUBE_TMUX_DIVIDER="${KUBE_TMUX_DIVIDER:-:}"
+KUBE_TMUX_SYMBOL_COLOR="${KUBE_TMUX_SYMBOL_COLOR:-blue}"
+KUBE_TMUX_CTX_COLOR="${KUBE_TMUX_CTX_COLOR:-red}"
+KUBE_TMUX_NS_COLOR="${KUBE_TMUX_NS_COLOR:-cyan}"
+KUBE_TMUX_TEXT_COLOR="${KUBE_TMUX_TEXT_COLOR:-colour250}"
 _KUBE_TMUX_KUBECONFIG_CACHE="${KUBECONFIG}"
 _KUBE_TMUX_LAST_TIME=0
+_KUBE_TMUX_SYMBOL_CACHE=""
 
 # Source customizations if present
 if [[ -f "${HOME}/.tmux/config/kube-func.sh" ]]; then
@@ -56,19 +58,31 @@ _kube_tmux_shell_type() {
 }
 
 _kube_tmux_symbol() {
-  if ((BASH_VERSINFO[0] >= 4)) && [[ $'\u2388 ' != "\\u2388 " ]]; then
-    KUBE_TMUX_SYMBOL=$'\u2388 '
-    KUBE_TMUX_SYMBOL_IMG=$'\u2638 '
+  if [[ -n "${_KUBE_TMUX_SYMBOL_CACHE}" ]]; then
+    echo "${_KUBE_TMUX_SYMBOL_CACHE}"
+    return
+  fi
+
+  local symbol
+  local symbol_img
+
+  if [[ "${KUBE_TMUX_SYMBOL_DEFAULT}" != $'\u2388 ' && "${KUBE_TMUX_SYMBOL_DEFAULT}" != "\\u2388 " ]]; then
+    symbol="${KUBE_TMUX_SYMBOL_DEFAULT}"
+    symbol_img="${KUBE_TMUX_SYMBOL_DEFAULT}"
+  elif ((BASH_VERSINFO[0] >= 4)) && [[ $'\u2388 ' != "\\u2388 " ]]; then
+    symbol=$'\u2388 '
+    symbol_img=$'\u2638 '
   else
-    KUBE_TMUX_SYMBOL=$'\xE2\x8E\x88 '
-    KUBE_TMUX_SYMBOL_IMG=$'\xE2\x98\xB8 '
+    symbol=$'\xE2\x8E\x88 '
+    symbol_img=$'\xE2\x98\xB8 '
   fi
 
   if [[ "${KUBE_TMUX_SYMBOL_USE_IMG}" == true ]]; then
-    KUBE_TMUX_SYMBOL="${KUBE_TMUX_SYMBOL_IMG}"
+    symbol="${symbol_img}"
   fi
 
-  echo "${KUBE_TMUX_SYMBOL}"
+  _KUBE_TMUX_SYMBOL_CACHE="${symbol}"
+  echo "${symbol}"
 }
 
 _kube_tmux_split() {
@@ -123,29 +137,6 @@ _kube_tmux_update_cache() {
   done
 }
 
-_kube_tmux_get_context() {
-  if [[ "${KUBE_TMUX_CONTEXT_ENABLE}" == true ]]; then
-    KUBE_TMUX_CONTEXT="$(${KUBE_TMUX_BINARY} config current-context 2>/dev/null)"
-    # Set context to 'N/A' if it is not defined
-    KUBE_TMUX_CONTEXT="${KUBE_TMUX_CONTEXT:-N/A}"
-
-    if [[ -n "${KUBE_TMUX_CONTEXT_FUNCTION}" && "$(type -t "${KUBE_TMUX_CONTEXT_FUNCTION}")" == "function" ]]; then
-      KUBE_TMUX_CONTEXT="$("${KUBE_TMUX_CONTEXT_FUNCTION}" "${KUBE_TMUX_CONTEXT}")"
-    fi
-  fi
-}
-
-_kube_tmux_get_ns() {
-  if [[ "${KUBE_TMUX_NAMESPACE_ENABLE}" == true ]]; then
-    KUBE_TMUX_NAMESPACE="$(${KUBE_TMUX_BINARY} config view --minify --output 'jsonpath={..namespace}' 2>/dev/null)"
-    KUBE_TMUX_NAMESPACE="${KUBE_TMUX_NAMESPACE:-N/A}"
-
-    if [[ -n "${KUBE_TMUX_NAMESPACE_FUNCTION}" && "$(type -t "${KUBE_TMUX_NAMESPACE_FUNCTION}")" == "function" ]]; then
-      KUBE_TMUX_NAMESPACE="$("${KUBE_TMUX_NAMESPACE_FUNCTION}" "${KUBE_TMUX_NAMESPACE}")"
-    fi
-  fi
-}
-
 _kube_tmux_get_context_ns() {
   # Set the command time
   if [[ "$(_kube_tmux_shell_type)" == "bash" ]]; then
@@ -158,31 +149,57 @@ _kube_tmux_get_context_ns() {
     _KUBE_TMUX_LAST_TIME=$(date +%s)
   fi
 
-  _kube_tmux_get_context
-  _kube_tmux_get_ns
+  if [[ "${KUBE_TMUX_CONTEXT_ENABLE}" == true || "${KUBE_TMUX_NAMESPACE_ENABLE}" == true ]]; then
+    local context_ns
+    context_ns=$(${KUBE_TMUX_BINARY} config view --minify --output 'jsonpath={.current-context}{" "}{..namespace}' 2>/dev/null)
+    KUBE_TMUX_CONTEXT=$(echo "${context_ns}" | cut -d ' ' -f 1)
+    KUBE_TMUX_NAMESPACE=$(echo "${context_ns}" | cut -d ' ' -f 2)
+
+    KUBE_TMUX_CONTEXT="${KUBE_TMUX_CONTEXT:-N/A}"
+    KUBE_TMUX_NAMESPACE="${KUBE_TMUX_NAMESPACE:-N/A}"
+
+    # Apply context function if enabled
+    if [[ "${KUBE_TMUX_CONTEXT_ENABLE}" == true ]]; then
+      local context_func="${KUBE_TMUX_CLUSTER_FUNCTION:-${KUBE_TMUX_CONTEXT_FUNCTION}}"
+      if [[ -n "${context_func}" && "$(type -t "${context_func}")" == "function" ]]; then
+        KUBE_TMUX_CONTEXT="$("${context_func}" "${KUBE_TMUX_CONTEXT}")"
+      fi
+    fi
+
+    # Apply namespace function if enabled
+    if [[ "${KUBE_TMUX_NAMESPACE_ENABLE}" == true ]]; then
+      if [[ -n "${KUBE_TMUX_NAMESPACE_FUNCTION}" && "$(type -t "${KUBE_TMUX_NAMESPACE_FUNCTION}")" == "function" ]]; then
+        KUBE_TMUX_NAMESPACE="$("${KUBE_TMUX_NAMESPACE_FUNCTION}" "${KUBE_TMUX_NAMESPACE}")"
+      fi
+    fi
+  fi
 }
 
 main() {
   _kube_tmux_update_cache
 
   local KUBE_TMUX
+  local symbol_color="${KUBE_TMUX_SYMBOL_COLOR}"
+  local text_color="${1:-${KUBE_TMUX_TEXT_COLOR}}"
+  local ctx_color="${2:-${KUBE_TMUX_CTX_COLOR}}"
+  local ns_color="${3:-${KUBE_TMUX_NS_COLOR}}"
 
   # Symbol
   if [[ "${KUBE_TMUX_SYMBOL_ENABLE}" == true ]]; then
-    KUBE_TMUX+="#[fg=${KUBE_TMUX_SYMBOL_COLOR}]$(_kube_tmux_symbol)#[fg=colour${1}]"
+    KUBE_TMUX+="#[fg=${symbol_color}]$(_kube_tmux_symbol)#[fg=${text_color}]"
   fi
 
   # Context
   if [[ "${KUBE_TMUX_CONTEXT_ENABLE}" == true ]]; then
-    KUBE_TMUX+="#[fg=${2}]${KUBE_TMUX_CONTEXT}"
+    KUBE_TMUX+="#[fg=${ctx_color}]${KUBE_TMUX_CONTEXT}"
   fi
 
   # Namespace
   if [[ "${KUBE_TMUX_NAMESPACE_ENABLE}" == true ]]; then
-    if [[ -n "${KUBE_TMUX_DIVIDER}" ]]; then
-      KUBE_TMUX+="#[fg=colour250]${KUBE_TMUX_DIVIDER}"
+    if [[ "${KUBE_TMUX_CONTEXT_ENABLE}" == true && -n "${KUBE_TMUX_DIVIDER}" ]]; then
+      KUBE_TMUX+="#[fg=${text_color}]${KUBE_TMUX_DIVIDER}"
     fi
-    KUBE_TMUX+="#[fg=${3}]${KUBE_TMUX_NAMESPACE}"
+    KUBE_TMUX+="#[fg=${ns_color}]${KUBE_TMUX_NAMESPACE}"
   fi
 
   echo "${KUBE_TMUX}"
